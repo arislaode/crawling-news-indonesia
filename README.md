@@ -1,18 +1,16 @@
-Tentu saja, berikut ini adalah contoh `README.md` yang rapi dan langsung bisa digunakan untuk proyek News Crawler Anda, mencakup semua instruksi yang diperlukan:
 
-```markdown
-# News Crawler
+### News Crawler
 
 News Crawler adalah aplikasi FastAPI yang dirancang untuk mengambil berita dari berbagai sumber online dan menyimpannya dalam database MySQL. Aplikasi ini menggunakan Alembic untuk manajemen migrasi database dan PyMySQL sebagai database driver.
 
-## Features
+### Features
 
-- **Automatic News Crawling**: Mengambil berita secara otomatis dari situs yang telah ditentukan.
-- **API Endpoints**: Menyediakan API untuk mengakses berita yang telah di-crawl dan disimpan.
-- **Database Integration**: Menggunakan MySQL untuk menyimpan hasil crawl.
-- **Data Migration**: Menggunakan Alembic untuk migrasi database.
+- Automatic News Crawling   : Mengambil berita secara otomatis dari situs yang telah ditentukan.
+- API Endpoints             : Menyediakan API untuk mengakses berita yang telah di-crawl dan disimpan.
+- Database Integration      : Menggunakan MySQL untuk menyimpan hasil crawl.
+- Data Migration            : Menggunakan Alembic untuk migrasi database.
 
-## Installation
+### Installation
 
 Sebelum menjalankan aplikasi, pastikan Docker sudah terinstal pada sistem Anda. Ikuti langkah-langkah di bawah ini untuk mengatur dan menjalankan News Crawler:
 
@@ -41,8 +39,6 @@ Untuk memulai proses crawling dan menyimpan data ke dalam database, jalankan:
 ```bash
 python app/scripts/crawler_script.py
 ```
-
-Ganti `<container_name_of_your_fastapi_application>` dengan nama container aplikasi FastAPI Anda.
 
 ## API Usage
 
