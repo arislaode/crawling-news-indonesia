@@ -49,8 +49,3 @@ Setelah data berhasil di-crawl dan disimpan, Anda dapat mengakses API endpoints 
 ## Contributing
 
 Kontribusi selalu terbuka! Jika Anda ingin berkontribusi pada proyek ini, silakan fork repositori ini, buat perubahan Anda, dan kirimkan pull request.
-```
-
-### Notes:
-- Pastikan untuk mengganti `<container_name_of_your_fastapi_application>` dengan nama container yang sebenarnya digunakan oleh aplikasi FastAPI Anda yang dapat Anda lihat menggunakan `docker ps`.
-- Sesuaikan langkah-langkah sesuai dengan struktur dan kebutuhan proyek Anda yang spesifik.
