@@ -1,20 +1,11 @@
 # Byte-compiled / optimized files
 __pycache__/
-*.py[cod]
-*$py.class
 
 # Virtual environments
 env/
-venv/
-.venv/
-ENV/
 
 # Environment variables
 .env
-
-# Operating system files
-.DS_Store
-Thumbs.db
 
 # IDE specific files
 .vscode/

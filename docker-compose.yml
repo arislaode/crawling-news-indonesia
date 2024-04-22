@@ -1,21 +1,15 @@
 version: '3.8'
 services:
   web:
+    container_name: news-crawler
     build: .
     ports:
       - "8000:8000"
     env_file: 
       - .env
-    depends_on:
-      - db
-  db:
-    image: mysql:5.7
-    platform: linux/x86_64
-    env_file:
-      - .env
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-volumes:
-  mysql_data:
+    networks:
+      - ansor-network
+
+networks:
+  ansor-network:
+    external: true

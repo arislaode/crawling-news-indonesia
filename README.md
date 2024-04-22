@@ -12,7 +12,7 @@ News Crawler adalah aplikasi FastAPI yang dirancang untuk mengambil berita dari 
 
 ### Installation
 
-Sebelum menjalankan aplikasi, pastikan Docker sudah terinstal pada sistem Anda. Ikuti langkah-langkah di bawah ini untuk mengatur dan menjalankan News Crawler:
+Sebelum menjalankan aplikasi, pastikan Docker & database container mysql sudah terinstal pada sistem Anda. 
 
 ### Step 1: Start the Application
 
