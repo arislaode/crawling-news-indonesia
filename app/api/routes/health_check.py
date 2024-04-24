@@ -1,4 +1,3 @@
-# app/api/routes/news.py
 from fastapi import APIRouter, status
 from app.core.handle_response import detailed_json_response
 
