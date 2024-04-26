@@ -15,11 +15,10 @@ def read_news(filter: str = Query(None), offset: int = Query(0, ge=0), limit: in
         total_pages = (total_count + limit - 1) // limit
         current_page = offset // limit + 1
         if news_items:
-            news_data = [item.to_dict() for item in news_items]
             return detailed_json_response(
                 status_code=status.HTTP_200_OK,
                 message="News retrieved successfully",
-                data=news_data,
+                data=news_items,
                 total_items=total_count,
                 total_pages=total_pages,
                 current_page=current_page
