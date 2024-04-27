@@ -26,6 +26,8 @@ Perintah ini akan membangun dan menjalankan semua container yang diperlukan seca
 
 ### Step 2: Run Database Migrations
 
+Jika menggunakan database PostgreSQL, sesuaikan value `DB_DIALECT` di file `.env` ke `postgresql`. Secara default, aplikasi ini dikonfigurasi menggunakan database MySQL.
+
 Setelah container berjalan, eksekusi migrasi database untuk mempersiapkan skema database yang diperlukan:
 
 ```bash
@@ -39,6 +41,13 @@ Untuk memulai proses crawling dan menyimpan data ke dalam database, jalankan:
 ```bash
 python app/scripts/crawler_script.py
 ```
+
+## Cleanup Data Berita
+```bash
+python app/scripts/news_cleanup_script.py
+```
+
+Berita akan dibersihkan, dan dipertahankan sampai 7 hari ke belakang dari hari ini.
 
 ## API Usage
 
