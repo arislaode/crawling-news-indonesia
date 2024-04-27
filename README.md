@@ -1,18 +1,18 @@
 
 ### News Crawler
 
-News Crawler adalah aplikasi FastAPI yang dirancang untuk mengambil berita dari berbagai sumber online dan menyimpannya dalam database MySQL. Aplikasi ini menggunakan Alembic untuk manajemen migrasi database dan PyMySQL sebagai database driver.
+News Crawler adalah aplikasi FastAPI yang dirancang untuk mengambil berita dari berbagai sumber online dan menyimpannya dalam database MySQL/PostgreSQL. Aplikasi ini menggunakan Alembic untuk manajemen migrasi database dan PyMySQL/Psycopg2 sebagai database driver.
 
 ### Features
 
 - Automatic News Crawling   : Mengambil berita secara otomatis dari situs yang telah ditentukan.
 - API Endpoints             : Menyediakan API untuk mengakses berita yang telah di-crawl dan disimpan.
-- Database Integration      : Menggunakan MySQL untuk menyimpan hasil crawl.
+- Database Integration      : Menggunakan MySQL/PostgreSQL untuk menyimpan hasil crawl.
 - Data Migration            : Menggunakan Alembic untuk migrasi database.
 
 ### Installation
 
-Sebelum menjalankan aplikasi, pastikan Docker & database container mysql sudah terinstal pada sistem Anda. 
+Sebelum menjalankan aplikasi, pastikan Docker & database container mysql/postgresql sudah terinstal pada sistem Anda. 
 
 ### Step 1: Start the Application
 
@@ -25,6 +25,8 @@ docker-compose up -d
 Perintah ini akan membangun dan menjalankan semua container yang diperlukan secara background.
 
 ### Step 2: Run Database Migrations
+
+Jika menggunakan database PostgreSQL, sesuaikan value `DB_DIALECT` di file `.env` ke `postgresql`. Secara default, aplikasi ini dikonfigurasi menggunakan database MySQL.
 
 Setelah container berjalan, eksekusi migrasi database untuk mempersiapkan skema database yang diperlukan:
 
@@ -39,6 +41,13 @@ Untuk memulai proses crawling dan menyimpan data ke dalam database, jalankan:
 ```bash
 python app/scripts/crawler_script.py
 ```
+
+## Cleanup Data Berita
+```bash
+python app/scripts/news_cleanup_script.py
+```
+
+Berita akan dibersihkan, dan dipertahankan sampai 7 hari ke belakang dari hari ini.
 
 ## API Usage
 
