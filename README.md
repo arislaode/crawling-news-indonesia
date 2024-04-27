@@ -1,18 +1,18 @@
 
 ### News Crawler
 
-News Crawler adalah aplikasi FastAPI yang dirancang untuk mengambil berita dari berbagai sumber online dan menyimpannya dalam database MySQL. Aplikasi ini menggunakan Alembic untuk manajemen migrasi database dan PyMySQL sebagai database driver.
+News Crawler adalah aplikasi FastAPI yang dirancang untuk mengambil berita dari berbagai sumber online dan menyimpannya dalam database MySQL/PostgreSQL. Aplikasi ini menggunakan Alembic untuk manajemen migrasi database dan PyMySQL/Psycopg2 sebagai database driver.
 
 ### Features
 
 - Automatic News Crawling   : Mengambil berita secara otomatis dari situs yang telah ditentukan.
 - API Endpoints             : Menyediakan API untuk mengakses berita yang telah di-crawl dan disimpan.
-- Database Integration      : Menggunakan MySQL untuk menyimpan hasil crawl.
+- Database Integration      : Menggunakan MySQL/PostgreSQL untuk menyimpan hasil crawl.
 - Data Migration            : Menggunakan Alembic untuk migrasi database.
 
 ### Installation
 
-Sebelum menjalankan aplikasi, pastikan Docker & database container mysql sudah terinstal pada sistem Anda. 
+Sebelum menjalankan aplikasi, pastikan Docker & database container mysql/postgresql sudah terinstal pada sistem Anda. 
 
 ### Step 1: Start the Application
 
