@@ -6,25 +6,19 @@ from app.db.models.news import News
 from app.core.logger import setup_logger
 import dateparser
 
-
 logger = setup_logger('detik_parser')
 
-URL = "https://www.detik.com/terpopuler"
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
-}
-
-def fetch_html(url):
-    response = requests.get(url, headers=HEADERS)
+def fetch_html_detik(url, header):
+    URL = f"https://www.{url}/terpopuler"
+    response = requests.get(URL, headers=header)
     if response.status_code == 200:
-        logger.info("Successfully fetched the HTML content.")
+        logger.info("Successfully fetched the HTML content detik.")
         return response.text
     else:
-        logger.error(f"Error fetching the URL: HTTP {response.status_code}")
+        logger.error(f"Error fetching the URL detik.com : HTTP {response.status_code}")
         return None
 
-def extract_details(article):
-    source = "detik.com"
+def extract_details_detik(article, sources):
     
     date_tag = article.find('span', attrs={"d-time": True})
     if date_tag:
@@ -33,17 +27,17 @@ def extract_details(article):
             parsed_date = dateparser.parse(date_string=raw_date, locales=['id'])
             date = parsed_date.strftime('%d/%m/%Y')
         except ValueError:
-            date = "Tanggal tidak ditemukan"
+            date = "Tanggal detik tidak ditemukan"
             logger.error(f"Failed to parse date: {raw_date}")
     else:
-        date = "Tanggal tidak ditemukan"
+        date = "Tanggal detik tidak ditemukan"
     
     category_tag = article.select_one('.media__date')
-    category = category_tag.contents[0].strip().split('|')[0] if category_tag else "Kategori tidak ditemukan"
+    category = category_tag.contents[0].strip().split('|')[0] if category_tag else "Kategori detik tidak ditemukan"
     
-    return date, category, source
+    return date, category, sources
 
-def parse_and_save_to_db(html, db_session: Session):
+def parse_and_save_to_db_detik(html, URL, db_session: Session):
     soup = BeautifulSoup(html, 'html.parser')
     articles = soup.find_all('article')
 
@@ -55,12 +49,12 @@ def parse_and_save_to_db(html, db_session: Session):
                 continue
 
         title_tag = article.find('h3', class_='media__title')
-        title = title_tag.get_text(strip=True) if title_tag else "Judul tidak ditemukan"
+        title = title_tag.get_text(strip=True) if title_tag else "Judul detik tidak ditemukan"
 
         img_tag = article.find('img')
-        thumbnail = img_tag['src'] if img_tag and 'src' in img_tag.attrs else "Thumbnail tidak ditemukan"
+        thumbnail = img_tag['src'] if img_tag and 'src' in img_tag.attrs else "Thumbnail detik tidak ditemukan"
 
-        date, category, source = extract_details(article)
+        date, category, source = extract_details_detik(article, URL)
         
         # Create a new News instance and add it to the session
         news_item = News(title=title, thumbnail=thumbnail, link=link, date=date, category=category, source=source)
@@ -68,8 +62,8 @@ def parse_and_save_to_db(html, db_session: Session):
     
     try:
         db_session.commit()
-        logger.info("Data successfully saved to the database.")
+        logger.info("Data detik successfully saved to the database.")
     except Exception as e:
         db_session.rollback()
-        logger.error(f"Failed to save data to the database: {str(e)}")
+        logger.error(f"Failed to save data detik to the database: {str(e)}")
 
