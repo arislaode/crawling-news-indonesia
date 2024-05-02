@@ -4,8 +4,7 @@ from bs4 import BeautifulSoup
 from sqlalchemy.orm import Session
 from app.db.models.news import News
 from app.core.logger import setup_logger
-import datetime
-from dateutil import parser
+import dateparser
 
 
 logger = setup_logger('detik_parser')
@@ -30,9 +29,8 @@ def extract_details(article):
     date_tag = article.find('span', attrs={"d-time": True})
     if date_tag:
         raw_date = date_tag['title'].strip()
-        raw_date = raw_date.replace('WIB', '').split(',', 1)[1].strip()
         try:
-            parsed_date = parser.parse(raw_date)
+            parsed_date = dateparser.parse(date_string=raw_date, locales=['id'])
             date = parsed_date.strftime('%d/%m/%Y')
         except ValueError:
             date = "Tanggal tidak ditemukan"
