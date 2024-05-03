@@ -5,8 +5,9 @@ from app.scripts.parsers.peradaban import fetch_html_peradaban, parse_and_save_t
 from app.scripts.parsers.tempo import fetch_html_tempo, parse_and_save_to_db_tempo
 from app.scripts.parsers.kompas import fetch_html_kompas, parse_and_save_to_db_kompas
 from app.scripts.parsers.kumparan import fetch_html_kumparan, parse_and_save_to_db_kumparan
+from app.scripts.parsers.tribunnews import fetch_html_tribunnews, parse_and_save_to_db_tribunnews
 from app.redis.client import redis_conn
-from app.core.config import DETIK_URL, PERADABAN_URL, TEMPO_URL, KOMPAS_URL, KUMPARAN_URL, HEADERS
+from app.core.config import DETIK_URL, PERADABAN_URL, TEMPO_URL, KOMPAS_URL, KUMPARAN_URL, TRIBUNNEWS_URL,HEADERS
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -51,6 +52,14 @@ def crawl_kumparan(db):
     except Exception as e:
         logging.error(f"An error occurred during the kumparan crawl: {e}")
 
+def crawl_tribunnews(db):
+    try:
+        html_content_tribunnews = fetch_html_tribunnews(TRIBUNNEWS_URL, HEADERS)
+        if html_content_tribunnews:
+            parse_and_save_to_db_tribunnews(html_content_tribunnews, TRIBUNNEWS_URL, db)
+    except Exception as e:
+        logging.error(f"An error occurred during the kumparan crawl: {e}")
+
 
 def run_crawler():
     try:
@@ -60,6 +69,7 @@ def run_crawler():
             crawl_tempo(db)
             crawl_kompas(db)
             crawl_kumparan(db)
+            crawl_tribunnews(db)
             redis_conn.flushdb()
     except Exception as e:
         logging.error(f"An error occurred in the run_crawler function: {e}")
