@@ -4,8 +4,9 @@ from app.scripts.parsers.detik import fetch_html_detik, parse_and_save_to_db_det
 from app.scripts.parsers.peradaban import fetch_html_peradaban, parse_and_save_to_db_peradaban
 from app.scripts.parsers.tempo import fetch_html_tempo, parse_and_save_to_db_tempo
 from app.scripts.parsers.kompas import fetch_html_kompas, parse_and_save_to_db_kompas
+from app.scripts.parsers.kumparan import fetch_html_kumparan, parse_and_save_to_db_kumparan
 from app.redis.client import redis_conn
-from app.core.config import DETIK_URL, PERADABAN_URL, TEMPO_URL, KOMPAS_URL, HEADERS
+from app.core.config import DETIK_URL, PERADABAN_URL, TEMPO_URL, KOMPAS_URL, KUMPARAN_URL, HEADERS
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -42,6 +43,15 @@ def crawl_kompas(db):
     except Exception as e:
         logging.error(f"An error occurred during the kompas crawl: {e}")
 
+def crawl_kumparan(db):
+    try:
+        html_content_kumparan = fetch_html_kumparan(KUMPARAN_URL, HEADERS)
+        if html_content_kumparan:
+            parse_and_save_to_db_kumparan(html_content_kumparan, KUMPARAN_URL, db)
+    except Exception as e:
+        logging.error(f"An error occurred during the kumparan crawl: {e}")
+
+
 def run_crawler():
     try:
         with SessionLocal() as db:
@@ -49,6 +59,7 @@ def run_crawler():
             crawl_peradaban(db)
             crawl_tempo(db)
             crawl_kompas(db)
+            crawl_kumparan(db)
             redis_conn.flushdb()
     except Exception as e:
         logging.error(f"An error occurred in the run_crawler function: {e}")
