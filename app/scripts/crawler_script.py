@@ -6,8 +6,9 @@ from app.scripts.parsers.tempo import fetch_html_tempo, parse_and_save_to_db_tem
 from app.scripts.parsers.kompas import fetch_html_kompas, parse_and_save_to_db_kompas
 from app.scripts.parsers.kumparan import fetch_html_kumparan, parse_and_save_to_db_kumparan
 from app.scripts.parsers.tribunnews import fetch_html_tribunnews, parse_and_save_to_db_tribunnews
+from app.scripts.parsers.nuonline import fetch_html_nuonline, parse_and_save_to_db_nuonline
 from app.redis.client import redis_conn
-from app.core.config import DETIK_URL, PERADABAN_URL, TEMPO_URL, KOMPAS_URL, KUMPARAN_URL, TRIBUNNEWS_URL,HEADERS
+from app.core.config import DETIK_URL, PERADABAN_URL, TEMPO_URL, KOMPAS_URL, KUMPARAN_URL, TRIBUNNEWS_URL, NUONLINE_URL, HEADERS
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -58,7 +59,15 @@ def crawl_tribunnews(db):
         if html_content_tribunnews:
             parse_and_save_to_db_tribunnews(html_content_tribunnews, TRIBUNNEWS_URL, db)
     except Exception as e:
-        logging.error(f"An error occurred during the kumparan crawl: {e}")
+        logging.error(f"An error occurred during the tribunnews crawl: {e}")
+
+def crawl_nuonline(db):
+    try:
+        html_content_nuonline = fetch_html_nuonline(NUONLINE_URL, HEADERS)
+        if html_content_nuonline:
+            parse_and_save_to_db_nuonline(html_content_nuonline, NUONLINE_URL, db)
+    except Exception as e:
+        logging.error(f"An error occurred during the nuonline crawl: {e}")
 
 
 def run_crawler():
@@ -70,6 +79,7 @@ def run_crawler():
             crawl_kompas(db)
             crawl_kumparan(db)
             crawl_tribunnews(db)
+            crawl_nuonline(db)
             redis_conn.flushdb()
     except Exception as e:
         logging.error(f"An error occurred in the run_crawler function: {e}")
