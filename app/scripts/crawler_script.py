@@ -2,8 +2,9 @@ import logging
 from app.db.session import SessionLocal
 from app.scripts.parsers.detik import fetch_html_detik, parse_and_save_to_db_detik
 from app.scripts.parsers.peradaban import fetch_html_peradaban, parse_and_save_to_db_peradaban
+from app.scripts.parsers.tempo import fetch_html_tempo, parse_and_save_to_db_tempo
 from app.redis.client import redis_conn
-from app.core.config import DETIK_URL, PERADABAN_URL, HEADERS
+from app.core.config import DETIK_URL, PERADABAN_URL, TEMPO_URL, HEADERS
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -24,11 +25,20 @@ def crawl_peradaban(db):
     except Exception as e:
         logging.error(f"An error occurred during the Peradaban crawl: {e}")
 
+def crawl_tempo(db):
+    try:
+        html_content_tempo = fetch_html_tempo(TEMPO_URL, HEADERS)
+        if html_content_tempo:
+            parse_and_save_to_db_tempo(html_content_tempo, TEMPO_URL, db)
+    except Exception as e:
+        logging.error(f"An error occurred during the tempo crawl: {e}")
+
 def run_crawler():
     try:
         with SessionLocal() as db:
             crawl_detik(db)
             crawl_peradaban(db)
+            crawl_tempo(db)
             redis_conn.flushdb()
     except Exception as e:
         logging.error(f"An error occurred in the run_crawler function: {e}")
