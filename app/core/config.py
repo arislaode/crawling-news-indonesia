@@ -23,6 +23,11 @@ DB_DIALECT = config("DB_DIALECT", cast=str, default="mysql")
 
 REDIS_HOST = config("REDIS_HOST", cast=str)
 REDIS_PORT = config("REDIS_PORT", cast=str)
+REDIS_USERNAME = config("REDIS_USERNAME", cast=str, default="")
+REDIS_PASSWORD = config("REDIS_PASSWORD", cast=str, default="")
+REDIS_DB = config("REDIS_DB", cast=int, default=0)
+
+NEWS_RETENTION_DAYS = config("NEWS_RETENTION_DAYS", cast=int, default=7)
 
 match DB_DIALECT:
     case "mysql":
