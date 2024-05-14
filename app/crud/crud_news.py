@@ -43,7 +43,7 @@ def get_news_items(db: Session, source: str = None, skip: int = 0, limit: int = 
 
     news = [item.to_dict() for item in all_news_items]
 
-    redis_conn.set(redis_key, json.dumps(news), ex=10)
+    redis_conn.set(redis_key, json.dumps(news))
 
     return news
 
