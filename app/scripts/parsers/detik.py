@@ -5,12 +5,16 @@ from sqlalchemy.orm import Session
 from app.db.models.news import News
 from app.core.logger import setup_logger
 import dateparser
+from app.crud import crud_news
+import time
+
 
 logger = setup_logger('detik_parser')
 
 def fetch_html_detik(url, header):
     URL = f"https://www.{url}/terpopuler"
     response = requests.get(URL, headers=header)
+    time.sleep(1)
     if response.status_code == 200:
         logger.info("Successfully fetched the HTML content detik.")
         return response.text
@@ -41,6 +45,9 @@ def parse_and_save_to_db_detik(html, URL, db_session: Session):
     soup = BeautifulSoup(html, 'html.parser')
     articles = soup.find_all('article')
 
+    titles = []
+    articles_data = []
+
     for article in articles:
         link_tag = article.find('a', class_='media__link')
         if link_tag and 'href' in link_tag.attrs:
@@ -51,19 +58,43 @@ def parse_and_save_to_db_detik(html, URL, db_session: Session):
         title_tag = article.find('h3', class_='media__title')
         title = title_tag.get_text(strip=True) if title_tag else "Judul detik tidak ditemukan"
 
+        titles.append(title)
         img_tag = article.find('img')
         thumbnail = img_tag['src'] if img_tag and 'src' in img_tag.attrs else "Thumbnail detik tidak ditemukan"
-
         date, category, source = extract_details_detik(article, URL)
-        
-        # Create a new News instance and add it to the session
-        news_item = News(title=title, thumbnail=thumbnail, link=link, date=date, category=category, source=source)
+
+        articles_data.append({
+            'title': title,
+            'thumbnail': thumbnail,
+            'link': link,
+            'date': date,
+            'category': category,
+            'source': source
+        })
+        time.sleep(1)
+
+    if titles:
+        existing_titles = crud_news.is_titles_exist(db_session, titles)
+        new_articles = [article for article in articles_data if article['title'] not in existing_titles]
+    else:
+        new_articles = articles_data
+
+    for article in new_articles:
+        news_item = News(
+            title=article['title'],
+            thumbnail=article['thumbnail'],
+            link=article['link'],
+            date=article['date'],
+            category=article['category'],
+            source=article['source']
+        )
         db_session.add(news_item)
-    
+
     try:
         db_session.commit()
         logger.info("Data detik successfully saved to the database.")
     except Exception as e:
         db_session.rollback()
         logger.error(f"Failed to save data detik to the database: {str(e)}")
+
 
