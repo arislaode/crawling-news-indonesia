@@ -63,3 +63,7 @@ def get_total_news_count(db: Session, source: str = None):
 def delete_news(db: Session, start_date: str, end_date: str):
     db.query(News).filter(News.date >= start_date, News.date <= end_date).delete()
     db.commit()
+
+def is_titles_exist(db: Session, titles: list) -> set:
+    existing_titles = db.query(News.title).filter(News.title.in_(titles)).all()
+    return set(title[0] for title in existing_titles)
