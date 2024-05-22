@@ -5,12 +5,16 @@ from sqlalchemy.orm import Session
 from app.db.models.news import News
 from app.core.logger import setup_logger
 import dateparser
+from app.crud import crud_news
+import time
+
 
 logger = setup_logger('nuonline_parser')
 
 def fetch_html_nuonline(url, header):
     URL = f"https://{url}/indeks"
     response = requests.get(URL, headers=header)
+    time.sleep(1)
     if response.status_code == 200:
         logger.info("Successfully fetched the HTML content for nuonline.")
         return response.text
@@ -40,6 +44,9 @@ def parse_and_save_to_db_nuonline(html, source, db_session: Session):
         subsequent_articles = article_parent.select('.border-gray2.flex.w-full.border-b-2.border-dashed.pb-2.first\\:mt-0.last\\:border-none.dark\\:border-gray-500.mt-3')
         articles = [first_article] + [art for art in subsequent_articles if art != first_article]
 
+        titles = []
+        articles_data = []
+
         for idx, article in enumerate(articles):
             if idx == 0:
                 link_url = f'https://www.{source}' + article.select_one('.h-full.w-full.max-h-32 > a')['href'] if article.select_one('.h-full.w-full.max-h-32 > a') else 'No link found'
@@ -49,11 +56,34 @@ def parse_and_save_to_db_nuonline(html, source, db_session: Session):
             thumbnail = article.select_one('img')['src'] if article.select_one('img') else 'No image found'
             date, category, source = extract_details_nuonline(article, source)
             
-            # Create a new News instance and add it to the session
-            news_item = News(title=title, thumbnail=thumbnail, link=link_url, date=date, category=category, source=source)
+            titles.append(title)
+            articles_data.append({
+                'title': title,
+                'thumbnail': thumbnail,
+                'link': link_url,
+                'date': date,
+                'category': category,
+                'source': source
+            })
+            time.sleep(1)
+
+        if titles:
+            existing_titles = crud_news.is_titles_exist(db_session, titles)
+            new_articles = [article for article in articles_data if article['title'] not in existing_titles]
+        else:
+            new_articles = articles_data
+
+        for article in new_articles:
+            news_item = News(
+                title=article['title'],
+                thumbnail=article['thumbnail'],
+                link=article['link'],
+                date=article['date'],
+                category=article['category'],
+                source=article['source']
+            )
             db_session.add(news_item)
 
-        
         try:
             db_session.commit()
             logger.info("Data nuonline successfully saved to the database.")
