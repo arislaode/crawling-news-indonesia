@@ -4,12 +4,15 @@ from sqlalchemy.orm import Session
 from app.db.models.news import News
 from app.core.logger import setup_logger
 import dateparser
+from app.crud import crud_news
+import time
 
 logger = setup_logger('tribunnews_parser')
 
 def fetch_html_tribunnews(url, header):
     URL = f"https://www.{url}/populer?section=nasional&type=6h"
     response = requests.get(URL, headers=header)
+    time.sleep(1)
     if response.status_code == 200:
         logger.info("Successfully fetched the HTML content from tribunnews.")
         return response.text
@@ -20,7 +23,7 @@ def fetch_html_tribunnews(url, header):
 def extract_details_tribunnews(article, source):
     date_tag = article.select_one('time')
     sources = f"https://www.{source}/populer?section=nasional&type=6h"
-    category = sources.split("section=")[1].split("&")[0]  # Correctly extracts 'nasional'
+    category = sources.split("section=")[1].split("&")[0]
     if date_tag:
         raw_date = date_tag.text.strip()
         try:
@@ -38,17 +41,44 @@ def parse_and_save_to_db_tribunnews(html, source, db_session: Session):
     soup = BeautifulSoup(html, 'html.parser')
     articles = soup.select('.lsi.pt10.pb10 ul > li')
 
+    titles = []
+    articles_data = []
+
     for article in articles:
         link_url = article.select_one('h3 a')['href']
         title = article.select_one('h3 a').get_text(strip=True)
         thumbnail = article.select_one('.fl.mb5.mr10 a img')['src']
 
         date, category, sources = extract_details_tribunnews(article, source)
-        
-        # Create a new News instance and add it to the session
-        news_item = News(title=title, thumbnail=thumbnail, link=link_url, date=date, category=category, source=sources)
+
+        titles.append(title)
+        articles_data.append({
+            'title': title,
+            'thumbnail': thumbnail,
+            'link': link_url,
+            'date': date,
+            'category': category,
+            'source': sources
+        })
+        time.sleep(1)
+
+    if titles:
+        existing_titles = crud_news.is_titles_exist(db_session, titles)
+        new_articles = [article for article in articles_data if article['title'] not in existing_titles]
+    else:
+        new_articles = articles_data
+
+    for article in new_articles:
+        news_item = News(
+            title=article['title'],
+            thumbnail=article['thumbnail'],
+            link=article['link'],
+            date=article['date'],
+            category=article['category'],
+            source=article['source']
+        )
         db_session.add(news_item)
-    
+
     try:
         db_session.commit()
         logger.info("Data from tribunnews successfully saved to the database.")
