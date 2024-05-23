@@ -1,4 +1,4 @@
-from urllib.parse import urlparse
+from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 from sqlalchemy.orm import Session
@@ -49,9 +49,20 @@ def parse_and_save_to_db_nuonline(html, source, db_session: Session):
 
         for idx, article in enumerate(articles):
             if idx == 0:
-                link_url = f'https://www.{source}' + article.select_one('.h-full.w-full.max-h-32 > a')['href'] if article.select_one('.h-full.w-full.max-h-32 > a') else 'No link found'
+                link_element = article.select_one('.h-full.w-full.max-h-32 > a')
+                relative_link = link_element['href'] if link_element else 'No link found'
             else:
-                link_url = f'https://www.{source}' + article.select_one('div.flex-1 > a')['href'] if article.select_one('div.flex-1 > a') else 'No link found'
+                link_element = article.select_one('div.flex-1 > a')
+                relative_link = link_element['href'] if link_element else 'No link found'
+
+            if relative_link != 'No link found':
+                if "islam.nu.or.id" in relative_link:
+                    link_url = urljoin('https://islam.nu.or.id', relative_link)
+                else:
+                    link_url = urljoin('https://www.nu.or.id', relative_link)
+            else:
+                link_url = 'No link found'
+                
             title = article.select_one('h1, h2').get_text(strip=True) if article.select_one('h1, h2') else 'No title found'
             thumbnail = article.select_one('img')['src'] if article.select_one('img') else 'No image found'
             date, category, source = extract_details_nuonline(article, source)
@@ -72,7 +83,6 @@ def parse_and_save_to_db_nuonline(html, source, db_session: Session):
             new_articles = [article for article in articles_data if article['title'] not in existing_titles]
         else:
             new_articles = articles_data
-
         for article in new_articles:
             news_item = News(
                 title=article['title'],
