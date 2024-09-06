@@ -7,6 +7,7 @@ from app.db.models.news import News
 from app.core.logger import setup_logger
 from app.crud import crud_news
 import time
+from datetime import date
 
 
 logger = setup_logger('kumparan_parser')
@@ -31,7 +32,7 @@ def extract_details_kumparan(article, source):
     
     if raw_date:
         parsed_date = dateparser.parse(date_string=raw_date, locales=['id'])
-        date_kumparan = parsed_date.strftime('%d/%m/%Y') if parsed_date else 'Date parsing failed'
+        date_kumparan = parsed_date.strftime('%d/%m/%Y') if parsed_date else date.today().strftime("%d/%m/%Y")
     else:
         current_date = dateparser.parse(date_string=time.strftime('%d/%m/%Y'), locales=['id'])
         date_kumparan = current_date.strftime('%d/%m/%Y')

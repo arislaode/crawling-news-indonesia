@@ -22,7 +22,7 @@ def get_news_items(db: Session, source: str = None, skip: int = 0, limit: int = 
     news_per_source = {}
     
     for src in sources:
-        query = db.query(News).filter(News.source == src).order_by(News.date.desc(), News.id)
+        query = db.query(News).filter(News.source == src).order_by(News.id.desc())
         src_news_items = query.limit(2).all()
         if src_news_items:
             news_per_source[src] = src_news_items
